@@ -7,7 +7,7 @@ authors = ["Raminder Singh"]
 documentation = "https://docs.rs/pg_escape/"
 repository = "https://github.com/imor/pg_escape"
 license = "MIT OR Apache-2.0"
-keywords = ["Postgres", "SQL", "SQL Injection"]
+keywords = ["Postgres", "SQL", "SQL-Injection"]
 
 [dependencies]
 phf = { version = "0.11.2", features = ["macros"] }
