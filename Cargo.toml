@@ -1,6 +1,6 @@
 [package]
 name = "pg_escape"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "A Rust library to escape Postgres flavoured SQL"
 authors = ["Raminder Singh"]
