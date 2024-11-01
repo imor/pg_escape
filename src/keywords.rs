@@ -1,10 +1,176 @@
+//! The following identifiers are recognized as keywords, and will be quoted by the [quote_identifier](crate::quote_identifier) function:
+//! * all
+//! * analyse
+//! * analyze
+//! * and
+//! * any
+//! * array
+//! * as
+//! * asc
+//! * asymmetric
+//! * authorization
+//! * between
+//! * bigint
+//! * binary
+//! * bit
+//! * boolean
+//! * both
+//! * case
+//! * cast
+//! * char
+//! * character
+//! * check
+//! * coalesce
+//! * collate
+//! * collation
+//! * column
+//! * concurrently
+//! * constraint
+//! * create
+//! * cross
+//! * current_catalog
+//! * current_date
+//! * current_role
+//! * current_schema
+//! * current_time
+//! * current_timestamp
+//! * current_user
+//! * dec
+//! * decimal
+//! * default
+//! * deferrable
+//! * desc
+//! * distinct
+//! * do
+//! * else
+//! * end
+//! * except
+//! * exists
+//! * extract
+//! * false
+//! * fetch
+//! * float
+//! * for
+//! * foreign
+//! * freeze
+//! * from
+//! * full
+//! * grant
+//! * greatest
+//! * group
+//! * grouping
+//! * having
+//! * ilike
+//! * in
+//! * initially
+//! * inner
+//! * inout
+//! * int
+//! * integer
+//! * intersect
+//! * interval
+//! * into
+//! * is
+//! * isnull
+//! * join
+//! * json
+//! * json_array
+//! * json_arrayagg
+//! * json_exists
+//! * json_object
+//! * json_objectagg
+//! * json_query
+//! * json_scalar
+//! * json_serialize
+//! * json_table
+//! * json_value
+//! * lateral
+//! * leading
+//! * least
+//! * left
+//! * like
+//! * limit
+//! * localtime
+//! * localtimestamp
+//! * merge_action
+//! * national
+//! * natural
+//! * nchar
+//! * none
+//! * normalize
+//! * not
+//! * notnull
+//! * null
+//! * nullif
+//! * numeric
+//! * offset
+//! * on
+//! * only
+//! * or
+//! * order
+//! * out
+//! * outer
+//! * overlaps
+//! * overlay
+//! * placing
+//! * position
+//! * precision
+//! * primary
+//! * real
+//! * references
+//! * returning
+//! * right
+//! * row
+//! * select
+//! * session_user
+//! * setof
+//! * similar
+//! * smallint
+//! * some
+//! * substring
+//! * symmetric
+//! * system_user
+//! * table
+//! * tablesample
+//! * then
+//! * time
+//! * timestamp
+//! * to
+//! * trailing
+//! * treat
+//! * trim
+//! * true
+//! * union
+//! * unique
+//! * user
+//! * using
+//! * values
+//! * varchar
+//! * variadic
+//! * verbose
+//! * when
+//! * where
+//! * window
+//! * with
+//! * xmlattributes
+//! * xmlconcat
+//! * xmlelement
+//! * xmlexists
+//! * xmlforest
+//! * xmlnamespaces
+//! * xmlparse
+//! * xmlpi
+//! * xmlroot
+//! * xmlserialize
+//! * xmltable
+
 // Keywords in this file are taken from https://github.com/postgres/postgres/blob/master/src/include/parser/kwlist.h
 // Only keywords which are not UNRESERVED_KEYWORD are taken.
 // TODO: Automtically generate code in this file instead of manually copying it.
 use phf::phf_map;
 
 #[derive(Clone)]
-pub enum Keyword {
+pub(crate) enum Keyword {
     All,
     Analyse,
     Analyze,
@@ -171,7 +337,7 @@ pub enum Keyword {
     Xmltable,
 }
 
-pub static KEYWORDS: phf::Map<&'static str, Keyword> = phf_map! {
+pub(crate) static KEYWORDS: phf::Map<&'static str, Keyword> = phf_map! {
     "all" => Keyword::All,
     "analyse" => Keyword::Analyse,
     "analyze" => Keyword::Analyze,
@@ -338,6 +504,6 @@ pub static KEYWORDS: phf::Map<&'static str, Keyword> = phf_map! {
     "xmltable" => Keyword::Xmltable,
 };
 
-pub fn parse_keyword(keyword: &str) -> Option<Keyword> {
+pub(crate) fn parse_keyword(keyword: &str) -> Option<Keyword> {
     KEYWORDS.get(keyword).cloned()
 }

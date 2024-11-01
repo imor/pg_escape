@@ -1,4 +1,4 @@
 mod identifier;
-mod keywords;
+pub mod keywords;
 
 pub use identifier::quote_identifier;
