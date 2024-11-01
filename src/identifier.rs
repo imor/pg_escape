@@ -14,6 +14,15 @@ fn is_lower_alphabetic_or_underscore(c: char) -> bool {
 
 //Adapted from https://github.com/postgres/postgres/blob/b82c877e76e2398409e823773413079668cf1881/src/backend/utils/adt/quote.c#L25
 /// Returns an identifier quoted according to Postgres rules.
+/// 
+/// Returns the original identifier if it:
+/// * Starts with a lowercase ASCII letter or underscore
+/// * And contains only lowercase ASCII letters, digits, or underscore
+/// * And is not a SQL keyword
+/// 
+/// Otherwise, returns a quoted identifier. A quoted identifier:
+/// * Starts and ends with double quotes.
+/// * Any double quotes are replaced with two double quotes.
 pub fn quote_identifier(identifier: &str) -> Cow<'_, str> {
     let mut chars = identifier.chars();
     let first = chars.next();
