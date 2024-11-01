@@ -63,10 +63,47 @@ mod tests {
     }
 
     #[test]
-    pub fn test_quote_identifier() {
+    pub fn empty_str_ident_is_not_quoted() {
         run_test("", "");
+    }
+
+    #[test]
+    pub fn underscore_ident_is_not_quoted() {
         run_test("_", "_");
-        run_test("a", "a");
+    }
+
+    #[test]
+    pub fn lowercase_alphabet_idents_are_not_quoted() {
+        for c in 'a'..='z' {
+            let ident = c.to_string();
+            run_test(&ident, &ident);
+        }
+    }
+
+    #[test]
+    pub fn idents_with_numerics_in_the_middle_are_not_quoted() {
+        for c in '0'..='9' {
+            let ident = format!("_asdf{c}qwer");
+            run_test(&ident, &ident);
+        }
+    }
+
+    #[test]
+    pub fn uppercase_alphabet_idents_are_quoted() {
+        for c in 'A'..='Z' {
+            let ident = c.to_string();
+            let expected = format!(r#""{ident}""#);
+            run_test(&ident, &expected);
+        }
+    }
+
+    #[test]
+    pub fn idents_starting_with_numerics_are_quoted() {
+        for c in '0'..='9' {
+            let ident = format!("{c}uiop");
+            let expected = format!(r#""{ident}""#);
+            run_test(&ident, &expected);
+        }
     }
 
     #[test]
@@ -75,5 +112,17 @@ mod tests {
             let quoted_keyword = format!(r#""{keyword}""#);
             run_test(keyword, &quoted_keyword);
         }
+    }
+
+    #[test]
+    pub fn idents_with_double_quote_are_quoted() {
+        run_test(r#"""#, r#""""""#);
+        run_test(r#"asdf"qwer"#, r#""asdf""qwer""#);
+    }
+
+    #[test]
+    pub fn non_ascii_idents_are_quoted() {
+        run_test("हिन्दी", r#""हिन्दी""#);
+        run_test("mIxEdCaSe", r#""mIxEdCaSe""#);
     }
 }
