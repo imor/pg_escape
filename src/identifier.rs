@@ -13,7 +13,7 @@ fn is_lower_alphabetic_or_underscore(c: char) -> bool {
 }
 
 //Adapted from https://github.com/postgres/postgres/blob/b82c877e76e2398409e823773413079668cf1881/src/backend/utils/adt/quote.c#L25
-/// Returns an identifier quoted according to Postgres rules.
+/// Same as Postgres's [quote_ident](https://www.postgresql.org/docs/current/functions-string.html) function.
 ///
 /// Returns the original identifier if it:
 /// * Starts with a lowercase ASCII letter or underscore
@@ -23,29 +23,57 @@ fn is_lower_alphabetic_or_underscore(c: char) -> bool {
 /// Otherwise, returns a quoted identifier. A quoted identifier:
 /// * Starts and ends with double quotes.
 /// * Any double quotes are replaced with two double quotes.
+///
+/// # Examples
+///
+/// ASCII identifiers returned as is:
+/// ```
+/// use pg_escape::quote_identifier;
+///
+/// let quoted_identifier = quote_identifier("_an_ident_1");
+/// assert_eq!(quoted_identifier, "_an_ident_1");
+/// ```
+///
+/// Non-ASCII identifier returned in quoted form:
+/// ```
+/// use pg_escape::quote_identifier;
+///
+/// let quoted_identifier = quote_identifier(r#"Some"Ident"#);
+/// assert_eq!(quoted_identifier, r#""Some""Ident""#);
+/// ```
+///
+/// Keywords are quoted:
+/// ```
+/// use pg_escape::quote_identifier;
+///
+/// let quoted_identifier = quote_identifier("select");
+/// assert_eq!(quoted_identifier, r#""select""#);
+/// ```
 pub fn quote_identifier(identifier: &str) -> Cow<'_, str> {
     let mut chars = identifier.chars();
     let first = chars.next();
-    let mut need_quoting = first
+    let mut needs_quoting = first
         .map(|c| !is_lower_alphabetic_or_underscore(c))
         .unwrap_or(false);
 
     let mut num_quotes = 0;
     for c in chars {
         if !is_lower_alphanumeric_or_underscore(c) {
-            need_quoting = true;
+            needs_quoting = true;
         }
         if c == '"' {
             num_quotes += 1;
         }
     }
 
-    if !need_quoting && parse_keyword(identifier).is_some() {
-        need_quoting = true;
+    if !needs_quoting && parse_keyword(identifier).is_some() {
+        needs_quoting = true;
     }
 
-    if need_quoting {
-        let mut result = String::with_capacity(identifier.len() + num_quotes + 2);
+    if needs_quoting {
+        num_quotes += 2; //two extra quotes surrounding the identifier
+        let capacity = identifier.len() + num_quotes;
+        let mut result = String::with_capacity(capacity);
         result.push('"');
         for c in identifier.chars() {
             if c == '"' {
